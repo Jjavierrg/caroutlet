@@ -82,6 +82,6 @@ export async function handler() {
     await saveCars(data);
     console.log('Done');
   } catch (error) {
-    console.error(error);
+    console.error(JSON.stringify(error));
   }
 }

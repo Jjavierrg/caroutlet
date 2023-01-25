@@ -22,11 +22,13 @@ export class coLambda extends Construct {
         PRIMARY_KEY: 'versionUrl',
         SORT_KEY: 'offeredSince',
         DYNAMODB_TABLE_NAME: table.tableName,
-        URL: 'https://services.athlon.com/api/irt/secured/employee/athloncaroutletes/version/search'
+        URL: 'https://services.athlon.com/api/irt/secured/employee/athloncaroutletes/version/search',
+        NODE_OPTIONS: '--no-warnings'
       },
       runtime: Runtime.NODEJS_18_X,
       description: 'Lambda function to scrape new cars from the website',
-      functionName: 'caroutlet-scrapper'
+      functionName: 'caroutlet-scrapper',
+      timeout: Duration.minutes(5)
     };
 
     const func = new NodejsFunction(this, 'caroutlet-scrapper', {
