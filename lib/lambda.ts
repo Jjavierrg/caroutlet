@@ -28,7 +28,7 @@ export class coLambda extends Construct {
       runtime: Runtime.NODEJS_18_X,
       description: 'Lambda function to scrape new cars from the website',
       functionName: 'caroutlet-scrapper',
-      timeout: Duration.minutes(5)
+      timeout: Duration.seconds(20)
     };
 
     const func = new NodejsFunction(this, 'caroutlet-scrapper', {
