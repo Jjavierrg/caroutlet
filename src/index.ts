@@ -77,11 +77,13 @@ async function saveCars(response: Response) {
   }
 }
 
-async function run() {
-  console.log('Running...');
-  const data = await getData();
-  await saveCars(data);
-  console.log('Done');
+export async function handler() {
+  try {
+    console.log('Running...');
+    const data = await getData();
+    await saveCars(data);
+    console.log('Done');
+  } catch (error) {
+    console.error(error);
+  }
 }
-
-run().catch((error) => console.error(error));
