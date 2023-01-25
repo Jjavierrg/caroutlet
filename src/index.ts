@@ -1,5 +1,6 @@
 import { GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
+import fetch from 'node-fetch';
 import { ddbClient } from './ddbClient';
 import { Car } from './models/car';
 import { Response } from './models/response';
@@ -17,9 +18,7 @@ async function getData(): Promise<Response> {
     referrer: 'https://www.athloncaroutlet.es/',
     referrerPolicy: 'strict-origin-when-cross-origin',
     body: '{"pagination":{"pageNumber":1,"pageSize":8000},"sorts":[{"field":"makeModel","direction":"ASC"}],"query":"","queryGroups":[]}',
-    method: 'POST',
-    mode: 'cors',
-    credentials: 'omit'
+    method: 'POST'
   });
 
   if (!response.ok) {
