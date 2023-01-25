@@ -8,6 +8,6 @@ export class coStack extends Stack {
     super(scope, id, props);
 
     const database = new coDatabase(this, 'Database');
-    const lambda = new coLambda(this, 'Microservices', database.table);
+    const lambda = new coLambda(this, 'Lambda', database.table);
   }
 }
