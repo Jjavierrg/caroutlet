@@ -1,6 +1,5 @@
 import { GetItemCommand, PutItemCommand } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
-import fetch from 'node-fetch';
 import { ddbClient } from './ddbClient';
 import { Car } from './models/car';
 import { Response } from './models/response';
