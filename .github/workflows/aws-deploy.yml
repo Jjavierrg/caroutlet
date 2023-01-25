@@ -23,5 +23,8 @@ jobs:
       - name: Synth stack
         run: npm run synth
 
+      - name: bootstrap
+        run: npm run bootstrap
+
       - name: Deploy stack
         run: npm run deploy
