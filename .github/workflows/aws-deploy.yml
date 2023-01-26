@@ -22,6 +22,8 @@ jobs:
 
       - name: Synth stack
         run: npm run synth
+        env:
+          EMAILS: ${{ vars.NOTIFICATION_EMAILS }}
 
       - name: Deploy stack
         run: npm run deploy
