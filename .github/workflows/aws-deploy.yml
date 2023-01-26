@@ -24,4 +24,6 @@ jobs:
         run: npm run synth
 
       - name: Deploy stack
-        run: npm run deploy -- --parameters notification-emails=${{ vars.NOTIFICATION_EMAILS }}
+        run: npm run deploy
+        env:
+          EMAILS: ${{ vars.NOTIFICATION_EMAILS }}
