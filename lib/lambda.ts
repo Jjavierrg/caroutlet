@@ -31,7 +31,7 @@ export class coLambda extends Construct {
     };
 
     const func = new NodejsFunction(this, 'caroutlet-scrapper', {
-      entry: join(__dirname, `/../src/index.ts`),
+      entry: join(__dirname, `/../lambdas/scrapper/index.ts`),
       ...nodeJsFunctionProps
     });
 

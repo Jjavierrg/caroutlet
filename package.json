@@ -9,7 +9,9 @@
     "watch": "tsc -w",
     "test": "jest",
     "synth": "cdk synth",
-    "deploy": "cdk deploy --all --require-approval never"
+    "deploy": "cdk deploy --all --require-approval never",
+    "install-lambdas-dependencies": "npm install --workspaces",
+    "install-all": "npm install && npm run install-lambdas-dependencies"
   },
   "devDependencies": {
     "@types/jest": "^26.0.10",
@@ -24,5 +26,8 @@
     "aws-cdk-lib": "2.62.0",
     "constructs": "^10.0.0",
     "source-map-support": "^0.5.16"
-  }
+  },
+  "workspaces": [
+    "lambdas/*"
+  ]
 }
