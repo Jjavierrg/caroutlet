@@ -96,7 +96,7 @@ async function notifyNewCars(cars: Car[]) {
   const message = interestedCars
     .map(
       (car) =>
-        `${car.makeModelVersion}: PRECIO: ${car.consumerPrice}€ | KMS: ${car.lastKnownMileage}km  -> https://www.athloncaroutlet.es/buscar-coches/${car.makeUrl}/${car.modelUrl}/${car.actionModelCode}`
+        `${car.makeModelVersion} PRECIO: ${car.consumerPrice}€ | KMS: ${car.lastKnownMileage}km  -> https://www.athloncaroutlet.es/buscar-coches/${car.makeUrl}/${car.modelUrl}/${car.actionModelCode}`
     )
     .join('\n\n');
   await snsClient.send(new PublishCommand({ TopicArn: process.env.SNS_TOPIC_ARN, Message: message, Subject: 'Nuevos coches' }));
