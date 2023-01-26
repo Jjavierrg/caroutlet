@@ -1,8 +1,10 @@
 import { PutItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
 import { marshall } from '@aws-sdk/util-dynamodb';
-import { ddbClient } from './ddbClient';
+import { ddbClient } from './clients/ddbClient';
+import { snsClient } from './clients/snsClient';
 import { Car } from './models/car';
 import { Response } from './models/response';
+import { PublishCommand } from '@aws-sdk/client-sns';
 
 async function getData(): Promise<Response> {
   const url = process.env.URL!;
@@ -77,6 +79,27 @@ async function saveCars(response: Response) {
   for (const car of newCars) {
     await saveCar(car);
   }
+
+  await notifyNewCars(newCars);
+}
+
+async function notifyNewCars(cars: Car[]) {
+  const maxPrice: number = +process.env.MAX_PRICE!;
+  const maxKm: number = +process.env.MAX_KMS!;
+  const interestedCars = cars.filter((car) => car.consumerPrice <= maxPrice && car.lastKnownMileage <= maxKm);
+
+  if (!interestedCars.length) {
+    console.log('No interested cars found');
+    return;
+  }
+
+  const message = interestedCars
+    .map(
+      (car) =>
+        `${car.description}: PRECIO: ${car.consumerPrice}€ | KMS: ${car.lastKnownMileage}km | foto: ${car.photo}   -> https://www.athloncaroutlet.es/buscar-coches/${car.makeUrl}/${car.modelUrl}/${car.actionModelCode}`
+    )
+    .join('\n\n');
+  await snsClient.send(new PublishCommand({ TopicArn: process.env.SNS_TOPIC_ARN, Message: message, Subject: 'Nuevos coches' }));
 }
 
 export async function handler() {
