@@ -86,7 +86,7 @@ async function saveCars(response: Response) {
 async function notifyNewCars(cars: Car[]) {
   const maxPrice: number = +process.env.MAX_PRICE!;
   const maxKm: number = +process.env.MAX_KMS!;
-  const interestedCars = cars.filter((car) => car.consumerPrice <= maxPrice && car.lastKnownMileage <= maxKm);
+  const interestedCars = cars.filter((car) => car.occasionPrice <= maxPrice && car.lastKnownMileage <= maxKm);
 
   if (!interestedCars.length) {
     console.log('No interested cars found');
@@ -96,7 +96,7 @@ async function notifyNewCars(cars: Car[]) {
   const message = interestedCars
     .map(
       (car) =>
-        `${car.makeModelVersion} PRECIO: ${car.consumerPrice}€ | KMS: ${car.lastKnownMileage}km  -> https://www.athloncaroutlet.es/buscar-coches/${car.makeUrl}/${car.modelUrl}/${car.actionModelCode}`
+        `${car.makeModelVersion} PRECIO: ${car.occasionPrice}€ | KMS: ${car.lastKnownMileage}km  -> https://www.athloncaroutlet.es/buscar-coches/${car.makeUrl}/${car.modelUrl}/${car.actionModelCode}`
     )
     .join('\n\n');
   await snsClient.send(new PublishCommand({ TopicArn: process.env.SNS_TOPIC_ARN, Message: message, Subject: 'Nuevos coches' }));
