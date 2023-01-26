@@ -16,7 +16,7 @@ async function getData(): Promise<Response> {
     },
     referrer: 'https://www.athloncaroutlet.es/',
     referrerPolicy: 'strict-origin-when-cross-origin',
-    body: '{"pagination":{"pageNumber":1,"pageSize":8000},"sorts":[{"field":"makeModel","direction":"ASC"}],"query":"","queryGroups":[]}',
+    body: '{"pagination":{"pageNumber":1,"pageSize":8000},"sorts":[{"field":"makeModel","direction":"ASC"}],"query":"","queryGroups":[{"concatenator":"AND","queryParts":[{"field":"transmissionType","values":["Automatic"]}]}]}',
     method: 'POST'
   });
 
