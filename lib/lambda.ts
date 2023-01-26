@@ -38,7 +38,7 @@ export class coLambda extends Construct {
     });
 
     const eventRule = new Rule(this, 'scheduleRule', {
-      schedule: Schedule.rate(Duration.hours(1)),
+      schedule: Schedule.rate(Duration.hours(6)),
     });
     eventRule.addTarget(new LambdaFunction(func));
 

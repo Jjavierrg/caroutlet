@@ -94,11 +94,18 @@ async function notifyNewCars(cars: Car[]) {
   }
 
   const message = interestedCars
-    .map(
-      (car) =>
-        `${car.makeModelVersion} PRECIO: ${car.occasionPrice}€ | KMS: ${car.lastKnownMileage}km  -> https://www.athloncaroutlet.es/buscar-coches/${car.makeUrl}/${car.modelUrl}/${car.actionModelCode}`
-    )
+    .map((car) => {
+      const fields = [];
+      fields.push(car.makeModelVersion);
+      fields.push(`AÑO: ${car.firstRegistrationDate}`);
+      fields.push(`PRECIO: ${car.occasionPrice}€`);
+      fields.push(`KMS: ${car.lastKnownMileage}km`);
+      fields.push(`https://www.athloncaroutlet.es/buscar-coches/${car.makeUrl}/${car.modelUrl}/${car.actionModelCode}`);
+
+      return fields.join(' | ');
+    })
     .join('\n\n');
+
   await snsClient.send(new PublishCommand({ TopicArn: process.env.SNS_TOPIC_ARN, Message: message, Subject: 'Nuevos coches' }));
 }
 
