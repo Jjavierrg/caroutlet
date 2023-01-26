@@ -61,8 +61,10 @@ async function saveCar(car: Car): Promise<void> {
   });
 
   await ddbClient.send(command);
+
+  console.log(`Saved car ${car.actionModelCode}`);
 }
-saveCar;
+
 async function saveCars(response: Response) {
   const cars = response.versions;
   const newCars = await filterNewCars(cars);
