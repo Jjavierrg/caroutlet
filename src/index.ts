@@ -31,10 +31,7 @@ async function getData(): Promise<Response> {
 async function existCar(car: Car): Promise<boolean> {
   const command = new GetItemCommand({
     TableName: process.env.DYNAMODB_TABLE_NAME,
-    Key: marshall({
-      versionUrl: car.versionUrl,
-      offeredSince: car.offeredSince
-    })
+    Key: marshall({ actionModelCode: car.actionModelCode })
   });
 
   const { Item } = await ddbClient.send(command);

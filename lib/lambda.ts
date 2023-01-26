@@ -19,8 +19,7 @@ export class coLambda extends Construct {
         ]
       },
       environment: {
-        PRIMARY_KEY: 'versionUrl',
-        SORT_KEY: 'offeredSince',
+        PRIMARY_KEY: 'actionModelCode',
         DYNAMODB_TABLE_NAME: table.tableName,
         URL: 'https://services.athlon.com/api/irt/secured/employee/athloncaroutletes/version/search',
         NODE_OPTIONS: '--no-warnings'

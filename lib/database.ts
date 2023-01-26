@@ -10,11 +10,7 @@ export class coDatabase extends Construct {
 
     this.table = new Table(this, 'outletcars', {
       partitionKey: {
-        name: 'versionUrl',
-        type: AttributeType.STRING
-      },
-      sortKey: {
-        name: 'offeredSince',
+        name: 'actionModelCode',
         type: AttributeType.STRING
       },
       tableName: 'outletcars',
