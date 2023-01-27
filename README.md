@@ -18,6 +18,17 @@ You will need the following tools:
 - AWS CDK Toolkit
 - Docker
 
+## Installation
+
+After installing the prerequisites and configuring your AWS credentials, you can deploy the solution in your AWS account using the following commands
+
+```bash
+  npm npm run install-all
+  npm run synth
+  npm run deploy
+```
+    
+
 ## Useful commands
 
 - `npm run build` compile typescript to js

@@ -14,12 +14,12 @@ async function getData(): Promise<Response> {
       'content-type': 'application/json',
       'sec-fetch-dest': 'empty',
       'sec-fetch-mode': 'cors',
-      'sec-fetch-site': 'cross-site',
+      'sec-fetch-site': 'cross-site'
     },
     referrer: 'https://www.athloncaroutlet.es/',
     referrerPolicy: 'strict-origin-when-cross-origin',
     body: '{"pagination":{"pageNumber":1,"pageSize":8000},"sorts":[{"field":"makeModel","direction":"ASC"}],"query":"","queryGroups":[{"concatenator":"AND","queryParts":[{"field":"transmissionType","values":["Automatic"]}]}]}',
-    method: 'POST',
+    method: 'POST'
   });
 
   if (!response.ok) {
@@ -46,7 +46,7 @@ async function filterNewCars(cars: Car[]): Promise<Car[]> {
     TableName: process.env.DYNAMODB_TABLE_NAME,
     ProjectionExpression: 'actionModelCode',
     FilterExpression: filterExpression,
-    ExpressionAttributeValues: marshall(expressionAttributeValues),
+    ExpressionAttributeValues: marshall(expressionAttributeValues)
   });
 
   const { Items } = await ddbClient.send(command);
@@ -59,7 +59,7 @@ async function filterNewCars(cars: Car[]): Promise<Car[]> {
 async function saveCar(car: Car): Promise<void> {
   const command = new PutItemCommand({
     TableName: process.env.DYNAMODB_TABLE_NAME,
-    Item: marshall(car || {}),
+    Item: marshall(car || {})
   });
 
   await ddbClient.send(command);
@@ -83,28 +83,32 @@ async function saveCars(response: Response) {
   await notifyNewCars(newCars);
 }
 
-async function notifyNewCars(cars: Car[]) {
+function getCarDescription(car: Car): string {
+  const fields = [];
+  fields.push(car.makeModelVersion);
+  fields.push(`AÑO: ${car.firstRegistrationDate}`);
+  fields.push(`PRECIO: ${car.occasionPrice}€`);
+  fields.push(`KMS: ${car.lastKnownMileage}km`);
+  fields.push(`https://www.athloncaroutlet.es/buscar-coches/${car.makeUrl}/${car.modelUrl}/${car.actionModelCode}`);
+
+  return fields.join(' | ');
+}
+
+async function notifyNewCars(cars: Car[]): Promise<void> {
   const maxPrice: number = +process.env.MAX_PRICE!;
   const maxKm: number = +process.env.MAX_KMS!;
   const interestedCars = cars.filter((car) => car.occasionPrice <= maxPrice && car.lastKnownMileage <= maxKm);
 
-  if (!interestedCars.length) {
-    console.log('No interested cars found');
-    return;
+  let message: string = '';
+
+  if (!!interestedCars.length) {
+    message = '---- 🤩 COCHES COINCIDENTES 🤩 ----\n';
+    message += interestedCars.map(getCarDescription).join('\n\n');
+    message += '\n\n';
   }
 
-  const message = interestedCars
-    .map((car) => {
-      const fields = [];
-      fields.push(car.makeModelVersion);
-      fields.push(`AÑO: ${car.firstRegistrationDate}`);
-      fields.push(`PRECIO: ${car.occasionPrice}€`);
-      fields.push(`KMS: ${car.lastKnownMileage}km`);
-      fields.push(`https://www.athloncaroutlet.es/buscar-coches/${car.makeUrl}/${car.modelUrl}/${car.actionModelCode}`);
-
-      return fields.join(' | ');
-    })
-    .join('\n\n');
+  message *= '---- 🚗 NUEVOS COCHES AÑADIDOS 🚗 ----\n';
+  message += cars.map(getCarDescription).join('\n\n');
 
   await snsClient.send(new PublishCommand({ TopicArn: process.env.SNS_TOPIC_ARN, Message: message, Subject: 'Nuevos coches' }));
 }
