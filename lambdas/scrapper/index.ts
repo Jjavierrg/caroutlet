@@ -97,6 +97,7 @@ function getCarDescription(car: Car): string {
 async function notifyNewCars(cars: Car[]): Promise<void> {
   const maxPrice: number = +process.env.MAX_PRICE!;
   const maxKm: number = +process.env.MAX_KMS!;
+  const newCars  = cars.filter((car) => car.occasionPrice > maxPrice || car.lastKnownMileage > maxKm);
   const interestedCars = cars.filter((car) => car.occasionPrice <= maxPrice && car.lastKnownMileage <= maxKm);
 
   let message: string = '';
@@ -107,8 +108,8 @@ async function notifyNewCars(cars: Car[]): Promise<void> {
     message += '\n\n';
   }
 
-  message *= '---- 🚗 NUEVOS COCHES AÑADIDOS 🚗 ----\n';
-  message += cars.map(getCarDescription).join('\n\n');
+  message += '---- 🚗 NUEVOS COCHES AÑADIDOS 🚗 ----\n';
+  message += newCars.map(getCarDescription).join('\n\n');
 
   await snsClient.send(new PublishCommand({ TopicArn: process.env.SNS_TOPIC_ARN, Message: message, Subject: 'Nuevos coches' }));
 }
