@@ -99,7 +99,7 @@ function getCarsMessage(cars: Car[], title: string): string {
     return '';
   }
 
-  const message = `---- ${title} ----\n`;
+  let message = `---- ${title} ----\n`;
   message += cars.map(getCarDescription).join('\n\n');
 
   return message;
