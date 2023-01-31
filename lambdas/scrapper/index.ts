@@ -12,14 +12,9 @@ async function getData(): Promise<Response> {
     headers: {
       accept: '*/*',
       'content-type': 'application/json',
-      'sec-fetch-dest': 'empty',
-      'sec-fetch-mode': 'cors',
-      'sec-fetch-site': 'cross-site'
     },
-    referrer: 'https://www.athloncaroutlet.es/',
-    referrerPolicy: 'strict-origin-when-cross-origin',
     body: '{"pagination":{"pageNumber":1,"pageSize":8000},"sorts":[{"field":"makeModel","direction":"ASC"}],"query":"","queryGroups":[{"concatenator":"AND","queryParts":[{"field":"transmissionType","values":["Automatic"]}]}]}',
-    method: 'POST'
+    method: 'POST',
   });
 
   if (!response.ok) {
@@ -46,7 +41,7 @@ async function filterNewCars(cars: Car[]): Promise<Car[]> {
     TableName: process.env.DYNAMODB_TABLE_NAME,
     ProjectionExpression: 'actionModelCode',
     FilterExpression: filterExpression,
-    ExpressionAttributeValues: marshall(expressionAttributeValues)
+    ExpressionAttributeValues: marshall(expressionAttributeValues),
   });
 
   const { Items } = await ddbClient.send(command);
@@ -59,7 +54,7 @@ async function filterNewCars(cars: Car[]): Promise<Car[]> {
 async function saveCar(car: Car): Promise<void> {
   const command = new PutItemCommand({
     TableName: process.env.DYNAMODB_TABLE_NAME,
-    Item: marshall(car || {})
+    Item: marshall(car || {}),
   });
 
   await ddbClient.send(command);
