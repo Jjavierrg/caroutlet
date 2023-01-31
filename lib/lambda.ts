@@ -41,7 +41,6 @@ export class coLambda extends Construct {
       schedule: Schedule.cron({
         minute: '0',
         hour: '8-22/2',
-        day: '?',
         weekDay: 'MON-SAT',
         month: '*',
         year: '*',
