@@ -31,7 +31,6 @@ export class coLambda extends Construct {
       description: 'Lambda function to scrape new cars from the website',
       functionName: 'caroutlet-scrapper',
       timeout: Duration.seconds(20),
-      logRetention: RetentionDays.THREE_DAYS,
     };
 
     const func = new NodejsFunction(this, 'caroutlet-scrapper', {
