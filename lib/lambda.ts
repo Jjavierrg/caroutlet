@@ -7,6 +7,7 @@ import { NodejsFunction, NodejsFunctionProps } from 'aws-cdk-lib/aws-lambda-node
 import { Construct } from 'constructs';
 import { join } from 'path';
 import { ITopic } from 'aws-cdk-lib/aws-sns';
+import { RetentionDays } from 'aws-cdk-lib/aws-logs';
 
 export class coLambda extends Construct {
   constructor(scope: Construct, id: string, table: ITable, topic: ITopic) {
@@ -30,6 +31,7 @@ export class coLambda extends Construct {
       description: 'Lambda function to scrape new cars from the website',
       functionName: 'caroutlet-scrapper',
       timeout: Duration.seconds(20),
+      logRetention: RetentionDays.THREE_DAYS,
     };
 
     const func = new NodejsFunction(this, 'caroutlet-scrapper', {
@@ -40,7 +42,7 @@ export class coLambda extends Construct {
     const eventRule = new Rule(this, 'scheduleRule', {
       schedule: Schedule.cron({
         minute: '0',
-        hour: '8-22/2',
+        hour: '7-21/2',
         weekDay: 'MON-SAT',
         month: '*',
         year: '*',
