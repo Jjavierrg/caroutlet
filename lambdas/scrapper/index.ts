@@ -1,20 +1,20 @@
 import { PutItemCommand, ScanCommand } from '@aws-sdk/client-dynamodb';
+import { PublishCommand } from '@aws-sdk/client-sns';
 import { marshall } from '@aws-sdk/util-dynamodb';
 import { ddbClient } from './clients/ddbClient';
 import { snsClient } from './clients/snsClient';
 import { Car } from './models/car';
 import { Response } from './models/response';
-import { PublishCommand } from '@aws-sdk/client-sns';
 
 async function getData(): Promise<Response> {
   const url = process.env.URL!;
   const response = await fetch(url, {
     headers: {
       accept: '*/*',
-      'content-type': 'application/json',
+      'content-type': 'application/json'
     },
     body: '{"pagination":{"pageNumber":1,"pageSize":8000},"sorts":[{"field":"makeModel","direction":"ASC"}],"query":"","queryGroups":[{"concatenator":"AND","queryParts":[{"field":"transmissionType","values":["Automatic"]}]}]}',
-    method: 'POST',
+    method: 'POST'
   });
 
   if (!response.ok) {
@@ -41,7 +41,7 @@ async function filterNewCars(cars: Car[]): Promise<Car[]> {
     TableName: process.env.DYNAMODB_TABLE_NAME,
     ProjectionExpression: 'actionModelCode',
     FilterExpression: filterExpression,
-    ExpressionAttributeValues: marshall(expressionAttributeValues),
+    ExpressionAttributeValues: marshall(expressionAttributeValues)
   });
 
   const { Items } = await ddbClient.send(command);
@@ -54,28 +54,12 @@ async function filterNewCars(cars: Car[]): Promise<Car[]> {
 async function saveCar(car: Car): Promise<void> {
   const command = new PutItemCommand({
     TableName: process.env.DYNAMODB_TABLE_NAME,
-    Item: marshall(car || {}),
+    Item: marshall(car || {})
   });
 
   await ddbClient.send(command);
 
   console.log(`Saved car ${car.actionModelCode}`);
-}
-
-async function saveCars(response: Response) {
-  const cars = response.versions;
-  const newCars = await filterNewCars(cars);
-
-  if (!newCars.length) {
-    console.log('No new cars found');
-    return;
-  }
-
-  for (const car of newCars) {
-    await saveCar(car);
-  }
-
-  await notifyNewCars(newCars);
 }
 
 function getCarDescription(car: Car): string {
@@ -100,7 +84,7 @@ function getCarsMessage(cars: Car[], title: string): string {
   return message;
 }
 
-async function notifyNewCars(cars: Car[]): Promise<void> {
+async function notifyNewCars(cars: Car[]): Promise<string> {
   const maxPrice: number = +process.env.MAX_PRICE!;
   const maxKm: number = +process.env.MAX_KMS!;
   const newCars = cars.filter((car) => car.occasionPrice > maxPrice || car.lastKnownMileage > maxKm);
@@ -109,18 +93,33 @@ async function notifyNewCars(cars: Car[]): Promise<void> {
   let message: string = '';
   message += getCarsMessage(interestedCars, '🤩 COCHES COINCIDENTES 🤩');
   message += '\n\n';
-  message += getCarsMessage(newCars, '🚗 NUEVOS COCHES AÑADIDOS 🚗 ');
+  message += getCarsMessage(newCars, '🚗 NUEVOS COCHES AÑADIDOS 🚗');
 
   await snsClient.send(new PublishCommand({ TopicArn: process.env.SNS_TOPIC_ARN, Message: message.trim(), Subject: 'Nuevos coches' }));
+  return message;
 }
 
-export async function handler() {
+export async function handler(): Promise<string> {
   try {
     console.log('Running...');
-    const data = await getData();
-    await saveCars(data);
-    console.log('Done');
+
+    const response = await getData();
+    const cars = response.versions;
+    const newCars = await filterNewCars(cars);
+
+    if (!newCars?.length) {
+      return 'No new cars found';
+    }
+
+    for (const car of newCars) {
+      await saveCar(car);
+    }
+
+    const message = await notifyNewCars(newCars);
+
+    return message;
   } catch (error) {
     console.error(JSON.stringify(error));
+    return 'Error: ${error}';
   }
 }
